@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-env --allow-sys --allow-read --watch server.ts"
+  },
+  "imports": {
+    "dotenv": "npm:dotenv@^17.2.3",
+    "express": "npm:express@^5.1.0",
+    "mongoose": "npm:mongoose@^8.19.1"
+  }
+}
