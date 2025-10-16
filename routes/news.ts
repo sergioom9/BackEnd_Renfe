@@ -18,9 +18,6 @@ router.options("/", (req: Request, res: Response) => {
 //GET ALL NEWS
 router.get("/", async (req: Request, res: Response) => {
     try {
-        if(req.headers.authorization==null || req.headers.authorization!==`${Deno.env.get("ADMIN_TOKEN")}`){
-            return res.status(401).json({ error: "Unauthorized" });
-        }
         const news: NewsType[] = await News.find();
         res.status(200).set(corsHeaders).json(news);
     } catch (err: Error | any) {
