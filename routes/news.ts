@@ -4,6 +4,16 @@ import { News } from "../DB/news.ts";
 import { NewsType } from "../types.ts";
 const router = express.Router();
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type",
+  "Access-Control-Max-Age": "86400",
+};
+
+router.options("/", (req: Request, res: Response) => {
+  res.status(200).set(corsHeaders).send("");
+});
 
 //GET ALL NEWS
 router.get("/", async (req: Request, res: Response) => {
@@ -12,9 +22,9 @@ router.get("/", async (req: Request, res: Response) => {
             return res.status(401).json({ error: "Unauthorized" });
         }
         const news: NewsType[] = await News.find();
-        res.status(200).json(news);
+        res.status(200).set(corsHeaders).json(news);
     } catch (err: Error | any) {
-        res.status(500).json({ error: err.message });
+        res.status(500).set(corsHeaders).json({ error: err.message });
     }
 });
 
@@ -23,15 +33,15 @@ router.get("/:newid", async (req: Request, res: Response) => {
     try {
         const newid = req.params.newid;
         if (!newid) {
-            return res.status(400).json({ error: "Missing newid" });
+            return res.status(400).set(corsHeaders).json({ error: "Missing newid" });
         }
         const uniquenew : NewsType | null = await News.findOne({ newid });
         if(!uniquenew){
-            return res.status(404).json({ error: "New not found" });
+            return res.status(404).set(corsHeaders).json({ error: "New not found" });
         }
-        res.status(200).json(uniquenew);
+        res.status(200).set(corsHeaders).json(uniquenew);
     } catch (err: Error | any) {
-        res.status(500).json({ error: err.message });
+        res.status(500).set(corsHeaders).json({ error: err.message });
     }
 });
 
@@ -39,10 +49,10 @@ router.get("/:newid", async (req: Request, res: Response) => {
 router.post("/create", async (req: Request, res: Response) => {
     try {
         if(req.headers.authorization==null || req.headers.authorization!==`${Deno.env.get("ADMIN_TOKEN")}`){
-            return res.status(401).json({ error: "Unauthorized" });
+            return res.status(401).set(corsHeaders).json({ error: "Unauthorized" });
         }
         if(req.body.newid==null || req.body.title==null|| req.body.content==null|| req.body.date==null){
-            return res.status(400).json({ error: "Missing params" });
+            return res.status(400).set(corsHeaders).json({ error: "Missing params" });
         }
         const news = new News({
             newid: req.body.newid,
@@ -52,9 +62,9 @@ router.post("/create", async (req: Request, res: Response) => {
             date: req.body.date
         });
         await news.save();
-        res.status(200).json(news);
+        res.status(200).set(corsHeaders).json(news);
     } catch (err: Error | any) {
-        res.status(500).json({ error: err.message });
+        res.status(500).set(corsHeaders).json({ error: err.message });
     }
 });
 
