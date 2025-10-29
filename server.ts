@@ -6,6 +6,7 @@ import loginRoutes from "./routes/login.ts";
 import registerRoutes from "./routes/register.ts";
 import ticketRoutes from "./routes/ticket.ts";
 import newsRoutes from "./routes/news.ts";
+import chatbotRoutes from "./routes/chatbot.ts"
 dotenv.config();
 
 const app = express();
@@ -18,6 +19,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/ticket", ticketRoutes);
 app.use("/news", newsRoutes);
+app.use("/chatbot", chatbotRoutes);
 
 mongoose.connect(mongoUri)
   .then(() => {
