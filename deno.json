@@ -12,6 +12,6 @@
     "dotenv": "npm:dotenv@^17.2.3",
     "express": "npm:express@^5.1.0",
     "mongoose": "npm:mongoose@^8.19.1",
-    "bcrypt": "https://deno.land/x/bcrypt/mod.ts"
+    "bcryptjs": "npm:bcryptjs"
   }
 }

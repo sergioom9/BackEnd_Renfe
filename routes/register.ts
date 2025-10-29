@@ -18,7 +18,7 @@ router.post("/", async (req: Request, res: Response) => {
             coins: req.body.coins || "0"
         });
         await user.save();
-        res.status(200).json(user);
+        res.status(200).json({userid:user.userid, name:user.name, email:user.email, coins:user.coins});
     } catch (err: Error | any) {
         res.status(500).json({ error: err.message });
     }
