@@ -2,8 +2,9 @@ import express, { Request, Response } from "express";
 import  bcrypt from "bcryptjs";
 import { User } from "../DB/user.ts";
 import { UserType } from "../types.ts";
-const router = express.Router();
+import { createJWT } from "../util.ts";
 
+const router = express.Router();
 
 router.post("/", async (req: Request, res: Response) => {
     try {
@@ -18,10 +19,16 @@ router.post("/", async (req: Request, res: Response) => {
         if(!await bcrypt.compare(req.body.password, user.password)){
             return res.status(401).json({ error: "Invalid password" });
         }
-        res.status(200).json({userid:user.userid, name:user.name, email:user.email, coins:user.coins});
+        const token = await createJWT({ userid:user.userid});
+        res.set({
+         "Set-Cookie": `bearer=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`,
+         "Content-Type": "application/json",
+          }).status(200).json({success:"OK",userid:user.userid});
         } catch (err: Error | any) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: "Error interno servidor" });
     }
 });
+
+
 
 export default router;

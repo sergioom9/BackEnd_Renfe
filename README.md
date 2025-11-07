@@ -1,18 +1,36 @@
-GET /user (Need Auth Header)
+LOGIN 
 
-GET /user/:id 
+POST "/login" BODYJSON{email,password} 
 
-GET /user/tickets/:userid
 
-POST /login   body:{email,password}
+REGISTER
 
-POST /register  body:{userid,name,email,password}
+POST "/register" BODYJSON{userid,name,email,password}
 
-GET /ticket  (Needs Auth Header)
 
-GET /ticket/:id 
+USER 
 
-POST /ticket/create  body:{ticketid,origin,destination,date,price}
+GET "/:userid"   COOKIE:bearer={}
+GET "/tickets/:userid"     COOKIE:bearer={}
+DELETE "/:userid"  COOKIE:bearer={}
+PUT "/"   BODYJSON{userid,email,name,pasword}
+(ADMIN) GET "/" 
 
-POST /ticket/sell    body:{ticketid,userid}
 
+TICKET
+
+GET "/" 
+GET "/:ticketid"   
+POST "/sell"  BODYJSON{ticketid,userid}
+(ADMIN) POST "/create"  BODYJSON{ticketid,origin,destination,date,price}
+(ADMIN) PUT "/"   BODYJSON{origin,destination,date,price}
+(ADMIN) DELETE "/:ticketid" 
+
+
+NEWS
+
+GET "/" 
+GET "/:newid"   
+(ADMIN) POST "/create"  BODYJSON{newid,image,title,content,date}
+(ADMIN) PUT "/"   BODYJSON{origin,destination,date,price}
+(ADMIN) DELETE "/:newid" 
