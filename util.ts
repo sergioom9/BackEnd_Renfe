@@ -42,7 +42,7 @@ export const sendAIPrompt = async (prompt: string): Promise<string> => {
 export const jwtsecret = Deno.env.get("JWT_SECRET")
 export const adminauth = Deno.env.get("ADMIN_TOKEN")
 
-const secret = new TextEncoder().encode("secret-that-no-one-knows");
+const secret = new TextEncoder().encode(jwtsecret);
 
 export async function createJWT(payload: JWTPayload): Promise<string> {
   const jwt = await new SignJWT(payload)

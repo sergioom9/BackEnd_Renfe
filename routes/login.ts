@@ -5,7 +5,7 @@ import { UserType } from "../types.ts";
 import { createJWT } from "../util.ts";
 
 const router = express.Router();
-
+//doc
 router.post("/", async (req: Request, res: Response) => {
     try {
         if(req.body.email==null || req.body.password==null){
@@ -14,10 +14,10 @@ router.post("/", async (req: Request, res: Response) => {
         const email=req.body.email;
         const user : UserType | null = await User.findOne({ email });
         if(!user){
-            return res.status(404).json({ error: "Invalid user" });
+            return res.status(404).json({ error: "Not found" });
         }
         if(!await bcrypt.compare(req.body.password, user.password)){
-            return res.status(401).json({ error: "Invalid password" });
+            return res.status(404).json({ error: "Not found" });
         }
         const token = await createJWT({ userid:user.userid});
         res.set({
@@ -25,7 +25,7 @@ router.post("/", async (req: Request, res: Response) => {
          "Content-Type": "application/json",
           }).status(200).json({success:"OK",userid:user.userid});
         } catch (err: Error | any) {
-        res.status(500).json({ error: "Error interno servidor" });
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
