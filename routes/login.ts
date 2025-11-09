@@ -26,7 +26,7 @@ router.post("/", async (req: Request, res: Response) => {
          "Content-Type": "application/json",
           }).status(200).json({success:"OK",userid:user.userid});
         } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: err });
     }
 });
 
