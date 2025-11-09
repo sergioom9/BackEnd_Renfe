@@ -7,6 +7,7 @@ import registerRoutes from "./routes/register.ts";
 import ticketRoutes from "./routes/ticket.ts";
 import newsRoutes from "./routes/news.ts";
 import cookieParser from "cookie-parser";
+import tokenRoutes from "./routes/token.ts";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use("/login", loginRoutes);
 app.use("/register", registerRoutes);
 app.use("/ticket", ticketRoutes);
 app.use("/news", newsRoutes);
+app.use("/token", tokenRoutes);
 
 mongoose.connect(mongoUri)
   .then(() => {
