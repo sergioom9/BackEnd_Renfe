@@ -17,7 +17,7 @@ router.post("/", async (req: Request, res: Response) => {
         const isAuth = await checkAuth(user.userid, tkn);
         if(!isAuth){return res.status(401).json({ error: "Bearer corrupted" });}
         res.set({
-         "Set-Cookie": `bearer=${tkn}; HttpOnly; Secure; Path=/; SameSite=Strict`,
+         "Set-Cookie": `bearer=${tkn}; Secure; Path=/; SameSite=Strict`,
          "Content-Type": "application/json",
           }).status(200).json({success:"OK",bearer:tkn});
         } catch (err: Error | any) {

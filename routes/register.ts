@@ -25,7 +25,7 @@ router.post("/", async (req: Request, res: Response) => {
         }
         const token = await createJWT({ userid:user.userid});
         res.set({
-         "Set-Cookie": `bearer=${token}; HttpOnly; Secure; Path=/; SameSite=Strict`,
+         "Set-Cookie": `bearer=${token}; Secure; Path=/; SameSite=Strict`,
          "Content-Type": "application/json",
           }).status(200).json({success:"OK",userid:user.userid});
     } catch (err: Error | any) {
