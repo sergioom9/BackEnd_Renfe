@@ -75,3 +75,16 @@ export const checkAuth = async (userid:string,token:string):Promise<boolean>=> {
         }
         return false;
 }
+
+export const getuserJWT = async (token:string):Promise<string>=> {
+   if (!token) {
+            return "error"
+        } 
+        if(token){
+            const userlegit =await verifyJWT(token)
+            if (userlegit?.userid){
+                return userlegit.userid.toString();
+            }
+        }
+        return "error";
+}
