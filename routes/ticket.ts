@@ -9,7 +9,7 @@ const router = express.Router();
 //doc
 router.get("/", async (_req: Request, res: Response) => {
     try {
-        const tickets: TicketType[] = await Ticket.find().select("-__v -_id");
+        const tickets: TicketType[] = await Ticket.find().select("-__v -_id -userid -coinsGained");
         res.status(200).json(tickets);
     } catch (err: Error | any) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -23,7 +23,7 @@ router.get("/:ticketid", async (req: Request, res: Response) => {
         if (!ticketid) {
             return res.status(400).json({ error: "Missing params" });
         }
-        const ticket: TicketType | null = await Ticket.findOne({ ticketid }).select("-__v -_id");
+        const ticket: TicketType | null = await Ticket.findOne({ ticketid }).select("-__v -_id -userid -coinsGained");
         if(!ticket){
             return res.status(404).json({ error: "Not Found" });
         }
@@ -69,7 +69,7 @@ router.post("/sell", async (req: Request, res: Response) => {
         const ticketid=req.body.ticketid;
         const userid=req.body.userid;
         const isAuth = await checkAuth(userid,req.cookies.bearer)
-        if(!isAuth || req.headers.authorization==null || req.headers.authorization!==`${Deno.env.get("ADMIN_TOKEN")}`){
+        if(isAuth || req.headers.authorization==null || req.headers.authorization!==`${Deno.env.get("ADMIN_TOKEN")}`){
             return res.status(401).json({ error: "Unauthorized" });
         }
         const ticket = await Ticket.findOne({ ticketid });
