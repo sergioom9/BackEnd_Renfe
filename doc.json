@@ -1,113 +1,693 @@
 openapi: 3.0.0
-servers: []
+servers:
+  - url: 'https://backend-renfe.sergioom9.deno.net/'
+    description: ''
 info:
-  description: TrenFe API REST Doc
-  version: "1.0.0"
-  title: TrenFe API
+  description: 'Official Documentation for Trenfe API '
+  version: 1.0.0
+  title: Trenfe API REST DOC
   contact:
-    email: sergiomartinf0@gmail.com
+    email: 'sergiomartinf0,@gmail.com'
+  license:
+    name: ''
+    url: ''
 tags:
   - name: admins
     description: Secured Admin-only calls
-  - name: users
-    description: Operations available to regular users
 paths:
   /user:
     get:
-      tags:
-        - admins
-      summary: searches all users
-      operationId: searchUsers
+      tags: null
+      summary: Get Users
+      operationId: GetAllUsers
       description: |
-        By passing in the appropriate options, you can search for
-        available inventory in the system
+        Return all users on Database
       parameters:
-        - in: query
-          name: searchString
-          description: pass an optional search string for looking up inventory
-          required: false
-          schema:
+        - schema:
             type: string
-        - in: query
-          name: skip
-          description: number of records to skip for pagination
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-        - in: query
-          name: limit
-          description: maximum number of records to return
-          schema:
-            type: integer
-            format: int32
-            minimum: 0
-            maximum: 50
+          in: header
+          name: Authorization
+          description: Admin Auth
+          required: true
       responses:
         '200':
-          description: search results matching criteria
+          description: Users
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InventoryItem'
-        '400':
-          description: bad input parameter
-    post:
+                $ref: '#/components/schemas/UserSquema'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    put:
       tags:
         - admins
-      summary: adds an inventory item
-      operationId: addInventory
-      description: Adds an item to the system
+      summary: Update User
+      operationId: UpdateUser
+      description: "Updates a user information\r\nIf you have a JWT valid Cookie you can use this endpoint to edit your own profile"
       responses:
-        '201':
-          description: item created
+        '200':
+          description: User Updated Succesfully
         '400':
-          description: 'invalid input, object invalid'
-        '409':
-          description: an existing item already exists
+          description: Missing params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InventoryItem'
-        description: Inventory item to add
+              $ref: '#/components/schemas/UserSquema'
+        description: ''
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+        - schema:
+            type: string
+          in: cookie
+          name: Bearer
+          required: true
+  '/user/:userid':
+    get:
+      summary: Get User
+      tags: []
+      responses:
+        '200':
+          description: User Info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSquema'
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: GetUser
+      description: "Get User by userid\r\nIf you have a JWT valid Cookie you can use this endpoint to get your own data"
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: Bearer
+          required: true
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+    delete:
+      summary: Delete User
+      tags: []
+      responses:
+        '200':
+          description: User Deleted
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: deleteUser
+      description: "Delete User by userid\r\nIf you have a JWT valid Cookie you can use this endpoint to delete your own data"
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+        - schema:
+            type: string
+          in: cookie
+          name: Bearer
+          required: true
+  '/tickets/:userid':
+    get:
+      summary: Get Tickets from User
+      tags: []
+      responses:
+        '200':
+          description: User Tickets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketSquema'
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: getTicketsUser
+      description: "Get bought tickets from User\r\nIf you have a JWT valid Cookie you can use this endpoint to get your own tickets"
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authroization
+        - schema:
+            type: string
+          in: cookie
+          name: Bearer
+          required: true
+  /login:
+    post:
+      summary: Login
+      tags: []
+      responses:
+        '200':
+          description: User Data
+          headers:
+            Bearer (cookie):
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSquema'
+        '400':
+          description: Missing Params
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: Login
+      description: Login Endpoint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  x-stoplight:
+                    id: 4px6hfohvs4ys
+                password:
+                  type: string
+                  x-stoplight:
+                    id: 2oxebfk3a5ghx
+  /register:
+    post:
+      summary: Register
+      tags: []
+      responses:
+        '200':
+          description: Userid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: arjk53d3wv3ac
+                  userid:
+                    type: string
+                    x-stoplight:
+                      id: i8ey4wpsre7qy
+          headers:
+            Bearer (cookie):
+              schema:
+                type: string
+        '400':
+          description: Missing Params
+        '409':
+          description: Userid or email exists
+        '500':
+          description: Internal Server Error
+      operationId: register
+      description: Register Endpoint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userid:
+                  type: string
+                  x-stoplight:
+                    id: hdv1v44zbag5l
+                name:
+                  type: string
+                  x-stoplight:
+                    id: srr0d8rac05z5
+                email:
+                  type: string
+                  x-stoplight:
+                    id: macbiyzndkw8c
+                password:
+                  type: string
+                  x-stoplight:
+                    id: j6k71x1qye140
+  /ticket:
+    get:
+      summary: Get Tickets
+      tags: []
+      responses:
+        '200':
+          description: Tickets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketSquema'
+        '500':
+          description: Internal Server Error
+      operationId: getTickets
+      description: Get All tickets
+    put:
+      summary: Update Ticket
+      tags: []
+      responses:
+        '200':
+          description: Ticket updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: bo81c6td9g2xd
+                  ticketid:
+                    type: string
+                    x-stoplight:
+                      id: r8vzh9ngfgv56
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: updateTicket
+      description: Update a Ticket
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketSquema'
+  '/ticket/:ticketid':
+    get:
+      summary: Get Ticket
+      tags: []
+      responses:
+        '200':
+          description: Ticket
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketSquema'
+        '400':
+          description: Missing params
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: getTicket
+      description: Get ticket by ticketid
+    delete:
+      summary: Delete Ticket
+      tags: []
+      responses:
+        '200':
+          description: Ticket deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: dnz2w82ttzwss
+                  ticketid:
+                    type: string
+                    x-stoplight:
+                      id: d1ogf85jwd850
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: deleteTicket
+      description: Delete a Ticket
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
+  /ticket/create:
+    post:
+      summary: Create Ticket
+      tags: []
+      responses:
+        '200':
+          description: Ticket
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: 8camt02n5tglf
+                  ticketid:
+                    type: string
+                    x-stoplight:
+                      id: xlfyl5a3qsym3
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '409':
+          description: Ticketid exists
+      operationId: createTicket
+      description: Create New Ticket
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authroization
+          required: true
+        - schema:
+            type: string
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketSquema'
+  /ticket/sell:
+    post:
+      summary: Sell Ticket
+      tags: []
+      responses:
+        '200':
+          description: Ticket solt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: qmpkxvcqfcfxq
+                  ticketid:
+                    type: string
+                    x-stoplight:
+                      id: xxag2zmc6f9cm
+                  userid:
+                    type: string
+                    x-stoplight:
+                      id: vkjj9qyrbxrvb
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: ticketSell
+      description: Sell a Ticket to User
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+        - schema:
+            type: string
+          in: cookie
+          name: Bearer
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userid
+                - ticketid
+              properties:
+                userid:
+                  type: string
+                  x-stoplight:
+                    id: x8te5z7lhmefn
+                ticketid:
+                  type: string
+                  x-stoplight:
+                    id: 0pmrbny4q153z
+  /news:
+    get:
+        tags:
+            - admins
+      summary: Get News
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewSquema'
+        '500':
+          description: Internal Server Error
+      operationId: getNews
+      description: Get All News
+    put:
+      summary: Update New
+      tags: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: 8pdr77szdjija
+                  newid:
+                    type: string
+                    x-stoplight:
+                      id: q7jn0ke341zkz
+        '400':
+          description: Missing params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: updateNew
+      description: Update a New
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSquema'
+  /news/create:
+    post:
+      summary: Create New
+      tags: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: string
+                    x-stoplight:
+                      id: nq0vmo4lr4364
+                  newid:
+                    type: string
+                    x-stoplight:
+                      id: keh3yado9xft4
+        '400':
+          description: Missing params
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      operationId: createNew
+      description: Create a New
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSquema'
+  '/news/:newid':
+    get:
+      summary: Get New
+      tags: []
+      responses:
+        '200':
+          description: New
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewSquema'
+        '400':
+          description: 'Missing Params '
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: getNew
+      description: Get New by newid
+    delete:
+      summary: Delete New
+      tags: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Missing Params
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      operationId: deleteNew
+      description: Delete New by newid
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          required: true
 components:
   schemas:
-    InventoryItem:
+    UserSquema:
       type: object
+      title: User
       required:
-        - id
+        - userid
         - name
-        - manufacturer
-        - releaseDate
+        - email
+        - password
       properties:
-        id:
+        userid:
           type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          x-stoplight:
+            id: 2attxifidbxkd
         name:
           type: string
-          example: Widget Adapter
-        releaseDate:
+          x-stoplight:
+            id: wt12ov8eylh7k
+        email:
           type: string
-          format: date-time
-          example: '2016-08-29T09:12:33.001Z'
-        manufacturer:
-          $ref: '#/components/schemas/Manufacturer'
-    Manufacturer:
-      required:
-        - name
-      properties:
-        name:
+          x-stoplight:
+            id: vkyltwx9grpqt
+        password:
           type: string
-          example: ACME Corporation
-        homePage:
-          type: string
-          format: url
-          example: 'https://www.acme-corp.com'
-        phone:
-          type: string
-          example: 408-867-5309
+          x-stoplight:
+            id: otfmsfuqmtjh2
+    TicketSquema:
       type: object
+      title: Ticket
+      required:
+        - ticketid
+        - origin
+        - destination
+        - date
+        - price
+      properties:
+        ticketid:
+          type: string
+          x-stoplight:
+            id: bvs8n8rf2e4pl
+        origin:
+          type: string
+          x-stoplight:
+            id: gg3mryc3eos6x
+        destination:
+          type: string
+          x-stoplight:
+            id: 7ufz7qstd1zgk
+        date:
+          type: string
+          x-stoplight:
+            id: qst38e0zotaia
+        price:
+          type: string
+          x-stoplight:
+            id: nxe9fyqx0ar8x
+    NewSquema:
+      title: New
+      type: object
+      required:
+        - newid
+        - title
+        - content
+        - date
+      properties:
+        newid:
+          type: string
+          x-stoplight:
+            id: bwuu9h5f6bibg
+        title:
+          type: string
+          x-stoplight:
+            id: 6vlwv8p123qnk
+        image:
+          type: string
+          x-stoplight:
+            id: g19srefpfbyw5
+        content:
+          type: string
+          x-stoplight:
+            id: g3uj6xwut404b
+        date:
+          type: string
+          x-stoplight:
+            id: i5hpx790otzk1
+  securitySchemes: {}

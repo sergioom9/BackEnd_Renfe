@@ -11,6 +11,7 @@ router.post("/", async (req: Request, res: Response) => {
         if(req.body.email==null || req.body.password==null){
             return res.status(400).json({ error: "Missing params" });
         }
+        if(!req.body.email.toString().includes("@")){res.status(500).json({ error: "El email parece invalido" });}
         const email=req.body.email;
         const user : UserType | null = await User.findOne({ email });
         if(!user){

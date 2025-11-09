@@ -29,8 +29,8 @@ router.get("/:userid", async (req: Request, res: Response) => {
             return res.status(400).json({ error: "Missing params" });
         }
         const isAuth = await checkAuth(userid,req.cookies.bearer)
-        if(!isAuth){
-           return res.status(401).json({ error: "Unauthorized" });
+        if(!isAuth || req.headers.authorization==null || req.headers.authorization!==`${Deno.env.get("ADMIN_TOKEN")}`){
+            return res.status(401).json({ error: "Unauthorized" });
         }
         const user: UserType | null = await User.findOne({ userid }).select("-password -__v -_id");
         if(!user){
