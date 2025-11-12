@@ -69,7 +69,6 @@ router.post("/sell", async (req: Request, res: Response) => {
         const ticketid=req.body.ticketid;
         const userid=req.body.userid;
         const isAuth = await checkAuth(userid,req.cookies.bearer)
-        console.log(isAuth)
         if(!isAuth && (req.headers.authorization==null || req.headers.authorization!==`${Deno.env.get("ADMIN_TOKEN")}`)){
             return res.status(401).json({ error: "Unauthorized" });
         }

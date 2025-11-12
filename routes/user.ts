@@ -32,8 +32,9 @@ router.get("/:userid", async (req: Request, res: Response) => {
     }
     const isAuth = await checkAuth(userid, req.cookies.bearer);
     if (
-      isAuth || req.headers.authorization == null ||
-      req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`
+      !isAuth &&
+      (req.headers.authorization == null ||
+        req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`)
     ) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -58,8 +59,9 @@ router.get("/tickets/:userid", async (req: Request, res: Response) => {
     }
     const isAuth = await checkAuth(userid, req.cookies.bearer);
     if (
-      isAuth || req.headers.authorization == null ||
-      req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`
+      !isAuth &&
+      (req.headers.authorization == null ||
+        req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`)
     ) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -84,8 +86,9 @@ router.delete("/:userid", async (req: Request, res: Response) => {
     }
     const isAuth = await checkAuth(userid, req.cookies.bearer);
     if (
-      isAuth || req.headers.authorization == null ||
-      req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`
+      !isAuth &&
+      (req.headers.authorization == null ||
+        req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`)
     ) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -108,8 +111,9 @@ router.put("/", async (req: Request, res: Response) => {
     }
     const isAuth = await checkAuth(userid, req.cookies.bearer);
     if (
-      isAuth || req.headers.authorization == null ||
-      req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`
+      !isAuth &&
+      (req.headers.authorization == null ||
+        req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`)
     ) {
       return res.status(401).json({ error: "Unauthorized" });
     }
