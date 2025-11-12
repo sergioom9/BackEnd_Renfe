@@ -67,8 +67,10 @@ export const checkAuth = async (userid:string,token:string):Promise<boolean>=> {
    if (!userid || !token) {
             return false
         } 
+        console.log(userid)
         if(token){
             const userlegit =await verifyJWT(token)
+            console.log(userlegit)
             if (userlegit != null){
                 return true;
             }
