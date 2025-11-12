@@ -35,7 +35,6 @@ export const sendAIPrompt = async (prompt: string): Promise<string> => {
   }
 
   const data = await response.json();
-  console.log(data.candidates[0].content.parts[0])
   return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
 };
 
@@ -67,10 +66,8 @@ export const checkAuth = async (userid:string,token:string):Promise<boolean>=> {
    if (!userid || !token) {
             return false
         } 
-        console.log(userid)
         if(token){
             const userlegit =await verifyJWT(token)
-            console.log(userlegit)
             if (userlegit != null){
                 return true;
             }
