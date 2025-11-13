@@ -16,7 +16,7 @@ router.get("/", async (req: Request, res: Response) => {
     ) {
       return res.status(401).json({ error: "Unauthorized" });
     }
-    const users: UserType[] = await User.find().select("-password -__v -_id");
+    const users: UserType[] = await User.find().select("-__v -_id");
     res.status(200).json(users);
   } catch (err: Error | any) {
     res.status(500).json({ error: "Internal Server Error" });
