@@ -9,6 +9,10 @@ const router = express.Router();
 //doc
 router.get("/", async (_req: Request, res: Response) => {
     try {
+        if(req.headers.authorization==`${Deno.env.get("ADMIN_TOKEN")}`){
+            const tickets: TicketType[] = await Ticket.find().select("-__v -_id");
+            res.status(200).json(tickets);
+        }
         const tickets: TicketType[] = await Ticket.find().select("-__v -_id -userid -coinsGained");
         res.status(200).json(tickets);
     } catch (err: Error | any) {
