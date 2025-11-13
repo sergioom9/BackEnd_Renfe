@@ -16,7 +16,7 @@ router.get("/", async (_req: Request, res: Response) => {
         const tickets: TicketType[] = await Ticket.find().select("-__v -_id -userid -coinsGained");
         res.status(200).json(tickets);
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: err });
     }
 });
 
