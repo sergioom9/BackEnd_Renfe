@@ -7,7 +7,7 @@ import { checkAuth } from "../util.ts";
 const router = express.Router();
 
 //doc
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
     try {
         if(req.headers.authorization==`${Deno.env.get("ADMIN_TOKEN")}`){
             const tickets: TicketType[] = await Ticket.find().select("-__v -_id");
