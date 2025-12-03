@@ -91,7 +91,7 @@ router.put("/", async (req: Request, res: Response) => {
     }
     if (
       req.body.userid == null || req.body.name == null ||
-      req.body.email == null || req.body.password == null
+      req.body.email == null || req.body.password == null || req.body.coins == null
     ) {
       return res.status(400).json({ error: "Missing params" });
     }
@@ -100,7 +100,7 @@ router.put("/", async (req: Request, res: Response) => {
     if (!useractual) {
       return res.status(404).json({ error: "Not Found" });
     }
-    const coins = useractual ? useractual.coins : "0";
+    const coins = req.body.coins ;
     await User.updateOne(
       { userid: req.body.userid },
       {
