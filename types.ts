@@ -8,13 +8,11 @@ export type UserType = {
 
 export type TicketType = {
     ticketid:string,
-    userid:string,
     origin:string,  
     destination:string,
     date:string,
     price:string,
-    coinsGained:string,
-    vendido:boolean
+    available:number
 }
 
 

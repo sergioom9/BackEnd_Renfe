@@ -51,33 +51,6 @@ router.get("/:userid", async (req: Request, res: Response) => {
 });
 
 //doc
-router.get("/tickets/:userid", async (req: Request, res: Response) => {
-  try {
-    const userid = req.params.userid;
-    if (!userid) {
-      return res.status(400).json({ error: "Missing params" });
-    }
-    const isAuth = await checkAuth(userid, req.cookies.bearer);
-    if (
-      !isAuth &&
-      (req.headers.authorization == null ||
-        req.headers.authorization !== `${Deno.env.get("ADMIN_TOKEN")}`)
-    ) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    const tickets: TicketType[] | null = await Ticket.find({ userid }).select(
-      "-__v -_id",
-    );
-    if (!tickets) {
-      return res.status(404).json({ error: "Not found" });
-    }
-    res.status(200).json(tickets);
-  } catch (err: Error | any) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-//doc
 router.delete("/:userid", async (req: Request, res: Response) => {
   try {
     const userid = req.params.userid;

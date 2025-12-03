@@ -9,10 +9,10 @@ const router = express.Router();
 //doc
 router.get("/", async (_req: Request, res: Response) => {
     try {
-        const tickets: TicketType[] = await Ticket.find().select("-__v -_id -userid -coinsGained");
+        const tickets: TicketType[] = await Ticket.find().select("-__v -_id");
         res.status(200).json(tickets);
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error : " + err.message });
     }
 });
 
@@ -23,13 +23,13 @@ router.get("/:ticketid", async (req: Request, res: Response) => {
         if (!ticketid) {
             return res.status(400).json({ error: "Missing params" });
         }
-        const ticket: TicketType | null = await Ticket.findOne({ ticketid }).select("-__v -_id -userid -coinsGained");
+        const ticket: TicketType | null = await Ticket.findOne({ ticketid }).select("-__v -_id");
         if(!ticket){
             return res.status(404).json({ error: "Not Found" });
         }
         res.status(200).json(ticket);
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error : " + err.message });
     }
 });
 
@@ -48,7 +48,7 @@ router.post("/create", async (req: Request, res: Response) => {
             destination: req.body.destination,  
             date: req.body.date,
             price: req.body.price,
-            vendido:false
+            available: req.body.available || 1
         });
         await ticket.save();
         if(!ticket){
@@ -56,7 +56,7 @@ router.post("/create", async (req: Request, res: Response) => {
         }
         res.status(200).json({success:"OK",ticketid:ticket.ticketid});
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error : " + err.message });
     }
 });
 
@@ -74,19 +74,18 @@ router.post("/sell", async (req: Request, res: Response) => {
         }
         const ticket = await Ticket.findOne({ ticketid });
         const user = await User.findOne({ userid });
-        if(!ticket || !user || ticket.vendido){
+        const quantity = req.body.quantity || 1;
+        if(!ticket || !user || ticket.available<quantity){
             return res.status(404).json({ error: "Not found" });
         }
-        ticket.vendido=true;
-        const coinsGained= (parseInt(ticket.price)/10).toString();
-        ticket.coinsGained=coinsGained;
-        ticket.userid=userid;
+        ticket.available=ticket.available-quantity;
+        const coinsGained= (parseInt(ticket.price)/10 * quantity).toString();
         user.coins=(parseInt(user.coins)+parseInt(coinsGained)).toString();
         await ticket.save();
         await user.save();
-        res.status(200).json({success:"OK",ticketid:ticket.ticketid,userid:user.userid});
+        res.status(200).json({success:"OK",ticketid:ticket.ticketid,userid:user.userid,quantity:quantity,coinsGained:coinsGained});
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error :" + err.message });
     }
 });
 
@@ -105,15 +104,16 @@ router.put("/", async (req: Request, res: Response) => {
         }
         await Ticket.updateOne({ ticketid: req.body.ticketid }, {
             $set: {
-                origin: req.body.origin,
-                destination: req.body.destination,
-                date: req.body.date,
-                price: req.body.price
+                origin: req.body.origin || ticket.origin,
+                destination: req.body.destination || ticket.destination,
+                date: req.body.date || ticket.date,
+                price: req.body.price || ticket.price,
+                available: req.body.available || ticket.available,
             }
         });
         res.status(200).json({success:"OK",ticketid:req.body.ticketid});
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error : "+ err.message });
     }
 });
 
@@ -134,7 +134,7 @@ router.delete("/:ticketid", async (req: Request, res: Response) => {
         await Ticket.deleteOne({ ticketid });
         res.status(200).json({success:"OK",ticketid:ticketid});
     } catch (err: Error | any) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error :"+ err.message });
     }
 });
 
