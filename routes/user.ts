@@ -1,8 +1,7 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../DB/user.ts";
-import { TicketType, UserType } from "../types.ts";
-import { Ticket } from "../DB/tickets.ts";
+import {  UserType } from "../types.ts";
 import { checkAuth } from "../util.ts";
 
 const router = express.Router();
